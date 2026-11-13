@@ -1,0 +1,1505 @@
+﻿{
+  "name": "Gym AI Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "CUSTOMER",
+                    "rightValue": "={{ $json.text }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "39acff61-5111-4362-9c80-998a9a900c92"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Agent castomer"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ceaec523-fa25-48ac-b957-566fe2767c35",
+                    "leftValue": "SALES",
+                    "rightValue": "={{ $json.text }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Agent sales"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1616,
+        96
+      ],
+      "id": "dd4979f1-88d8-4f45-839d-b20fa962224d",
+      "name": "Switch",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Webhook').first().json.body.conversation.contact_inbox.contact_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -336,
+        112
+      ],
+      "id": "071ce5ff-a683-42b5-98e3-e13d6ee87275",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Webhook').first().json.body.conversation.contact_inbox.contact_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -416,
+        704
+      ],
+      "id": "36a6120c-af5b-4ee2-a195-0969e8a0ad0d",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-super-120b-a12b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        720
+      ],
+      "id": "22b1f56c-c64e-43e0-a522-d6f3377fd625",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "CIVfiX2ChZntDy36",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        96
+      ],
+      "id": "7bfae4ed-a05a-46d3-a5f5-a3e0c411b890",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "CIVfiX2ChZntDy36",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        848
+      ],
+      "id": "9b9805f1-4322-4a4f-a56d-b071346f0819",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "yqL7jTv8Sld4sfR7",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "n8nn",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3024,
+        80
+      ],
+      "id": "23d83904-d665-4dfd-808a-3b33c875fbf6",
+      "name": "WhatsApp Webhook",
+      "webhookId": "2bfb8778-0c18-4663-a87f-29eacd856267",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a smart routing assistant. Your ONLY job is to analyze the user's message and classify it into one of two categories.\nBased on the message content, your response must be EXACTLY ONE WORD from the following options, without any punctuation or extra text:\n\nChoose SALES: If the customer is asking about gym schedules, offers, prices, or reporting a problem/complaint that occurred at the gym.\n\nChoose CUSTOMER: If the customer is asking about their personal data, subscription details, membership expiration date, or any inquiry regarding their account status.\n\nRemember: Your output must be only one word (SALES or CUSTOMER)."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -2064,
+        96
+      ],
+      "id": "9e358bc4-b539-4839-9b1a-18e97ca79897",
+      "name": "Smart LLM Router",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Customer Name: {{ $('Edit Fields').isExecuted ? $('Edit Fields').first().json.name : $('Edit Fields1').first().json.name }}\nCustomer Phone: {{ $('Edit Fields').isExecuted ? ($('Edit Fields').first().json.phone_number || '').replace('+2', '') : ($('Edit Fields1').first().json.phone_number || '').replace('+2', '') }}\nCustomer Message: {{ $('Edit Fields').isExecuted ? $('Edit Fields').first().json.text : $('Edit Fields1').first().json.text }}",
+        "options": {
+          "systemMessage": "=You are the virtual AI Sales Assistant and Customer Service Representative for \"Titans Gym\".\nYour primary role is to answer customer inquiries, help them choose the right membership plans, and clarify gym hours and services in a professional and friendly manner.\n\nCRITICAL INSTRUCTION: You have access to a database search tool. You MUST actively use this tool to search for information EVERY TIME the user asks a question about the gym (prices, plans, hours, rules, etc.). NEVER answer from your own general knowledge and NEVER assume you already know the answer.\n\nStrictly adhere to the following rules:\n\n1. STRICT GROUNDING (Tool-Based):\n- Always call your search tool to find the exact answer before replying.\n- Answer customer questions STRICTLY based on the retrieved text from the tool.\n- NEVER hallucinate, guess, or assume prices, packages, schedules, or policies.\n- If the tool returns no relevant information, politely apologize, state that you don't have that specific detail at the moment, and advise them to visit the gym's reception.\n\n2. TONE, STYLE & LANGUAGE:\n- ALWAYS reply to the user in Arabic (a friendly, professional Egyptian tone is highly preferred).\n- Be welcoming, motivating, and sales-oriented.\n- When mentioning prices, briefly highlight the benefits to encourage subscriptions.\n- Keep your answers concise, clear, and well-organized. Use bullet points when listing packages or hours.\n\n3. TOOL & CAPABILITY LIMITATIONS:\n- You do not have the ability to process payments, book classes, or register users directly in the system.\n- If a customer wants to subscribe or pay, enthusiastically invite them to visit the Titans Gym branch to complete their registration.\n\n4. HANDLING SPECIFIC RULES:\n- Pay extreme attention to the separate workout hours for men and women. Always communicate these hours accurately.\n- If a question is completely outside the scope of fitness or the gym's services, politely steer the conversation back to Titans Gym.",
+          "maxIterations": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -448,
+        480
+      ],
+      "id": "265c2bcb-b86f-467f-b003-01cb4631bbee",
+      "name": "AI Sales Agent",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Customer Name: {{ $('Edit Fields').isExecuted ? $('Edit Fields').first().json.name : $('Edit Fields1').first().json.name }}\nCustomer Phone: {{ $('Edit Fields').isExecuted ? ($('Edit Fields').first().json.phone_number || '').replace('+20', '0') : ($('Edit Fields1').first().json.phone_number || '').replace('+20', '0') }}\nCustomer Message: {{ $('Edit Fields').isExecuted ? $('Edit Fields').first().json.text : $('Edit Fields1').first().json.text }}",
+        "options": {
+          "systemMessage": "=You are the dedicated Customer Service Agent for \"Titans Gym\". Your primary role is managing subscriber accounts and answering inquiries using the provided database tools.\nAlways reply to the customer in Arabic. Keep your tone friendly, highly concise, and suitable for WhatsApp.\n\n# 1. PHONE NUMBER REQUIREMENT (CRITICAL)\n- Always check the \"Customer Phone from System\" provided in your input.\n- If the phone number is EMPTY, NULL, or missing, DO NOT execute any database tools. Instead, politely reply in Arabic asking for their phone number: \"ط¹ظپظˆط§ظ‹طŒ ط±ظ‚ظ… ظ‡ط§طھظپظƒ ظ„ط§ ظٹط¸ظ‡ط± ظ„ط¯ظٹ. ط¨ط±ط¬ط§ط، ظƒطھط§ط¨ط© ط±ظ‚ظ… ط§ظ„ظ‡ط§طھظپ ط§ظ„ط°ظٹ ط³ط¬ظ„طھ ط¨ظ‡ ظپظٹ ط§ظ„ط¬ظٹظ… ظ„ظƒظٹ ط£طھظ…ظƒظ† ظ…ظ† ظ…ط±ط§ط¬ط¹ط© ط¨ظٹط§ظ†ط§طھظƒ.\"\n- ONLY use database tools once you have a valid phone number.\n\n# 2. STANDARD INQUIRIES & UPDATES\n- Search First: Use the valid phone number to search the database to verify the customer.\n- Short Confirmations: NEVER include details (like expiration date or sessions) unless explicitly asked.\n  * New Customer Registration: \"طھظ… طھط³ط¬ظٹظ„ ط§ط´طھط±ط§ظƒظƒ ط¨ظ†ط¬ط§ط­ ظپظٹ ط¬ظٹظ… طھظٹطھط§ظ†ط²طŒ ط£ظ‡ظ„ط§ظ‹ ط¨ظƒ ظ…ط¹ظ†ط§\"\n  * Subscription Renewal: \"طھظ… طھط¬ط¯ظٹط¯ ط§ط´طھط±ط§ظƒظƒ ط¨ظ†ط¬ط§ط­ ظˆط´ظƒط±ط§ظ‹طŒ ط§ط³طھظ…ط±\"\n- Data Updates: Use the Update SQL tool if the customer requests to modify standard data.\n\n# 3. SENSITIVE OPERATIONS & APPROVALS (HITL)\nYou do NOT have the authority to directly execute sensitive actions (e.g., suspending, postponing, freezing, or canceling a subscription). \nIf a customer asks for any of these actions, or asks to speak to a human, you MUST follow these exact steps:\n1. NEVER promise the customer that the action is completed.\n2. NEVER invent, guess, or hallucinate a Request ID.\n3. You MUST physically call the `Create_Approval_Request` tool to submit the request to management.\n4. Wait for the tool to execute and return the real, generated Request ID.\n5. Inform the customer that their request is PENDING management approval and give them the returned Request ID.\n\n# 4. SYSTEM TRIGGER (CRITICAL CODE)\nIf, and ONLY if, you have successfully used the `Create_Approval_Request` tool and received a real ID from the database, you MUST append this exact secret code at the very end of your final reply to the customer:\n[NEW_REQUEST]\n\nExample of a correct response after successful tool execution:\n\"طھظ… ط±ظپط¹ ط·ظ„ط¨ظƒ ظ„طھط¬ظ…ظٹط¯ ط§ظ„ط§ط´طھط±ط§ظƒ ظ„ظ„ط¥ط¯ط§ط±ط© ظ„ظ„ظ…ط±ط§ط¬ط¹ط©. ط±ظ‚ظ… ط·ظ„ط¨ظƒ ظ‡ظˆ 5. ط³ظ†ظ‚ظˆظ… ط¨ط¥ط¹ظ„ط§ظ…ظƒ ظپظˆط± ط§طھط®ط§ط° ط§ظ„ظ‚ط±ط§ط±.\n[NEW_REQUEST]\"",
+          "maxIterations": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -432,
+        -96
+      ],
+      "id": "b84e8c04-20de-404a-b973-bca74268cab2",
+      "name": "AI Customer Agent",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search Titans Gym database to retrieve accurate information about membership plans, prices, gym working hours, rules, cancellation policies, and services. Always use this tool to answer customer inquiries regarding the gym.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        688
+      ],
+      "id": "341171e0-c7b7-4c0d-8c35-40cb30b1649f",
+      "name": "Gym Knowledge Base",
+      "notesInFlow": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "qUqUD5SuLWvwe6ED",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Execute a SQL query in PostgresTool to fetch subscription details. REQUIRED PARAMETER: phone. You MUST pass ONLY the valid 11-digit phone number as a STRING exactly as provided, keeping the leading '0' (e.g., '01040135406'). DO NOT remove the zero and DO NOT write SQL queries.",
+        "operation": "executeQuery",
+        "query": "SELECT s.start_date, s.end_date, s.status, s.duration_months\nFROM subscriptions s\nJOIN customers c ON s.customer_id = c.id\nWHERE c.phone LIKE '%' || $1;",
+        "options": {
+          "queryReplacement": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query_Parameters', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        -160,
+        -272
+      ],
+      "id": "fff9c388-125c-4c65-9325-8bb2733010a5",
+      "name": "Subscription DB Query",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "subscriptions",
+          "mode": "list",
+          "cachedResultName": "subscriptions"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "customer_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('customer_id__using_to_match_', ``, 'number') }}",
+            "duration_months": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('duration_months', ``, 'number') }}",
+            "start_date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('start_date', ``, 'string') }}",
+            "end_date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('end_date', ``, 'string') }}",
+            "status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('status', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "customer_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "customer_id",
+              "displayName": "customer_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "duration_months",
+              "displayName": "duration_months",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "start_date",
+              "displayName": "start_date",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "end_date",
+              "displayName": "end_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        -352,
+        -256
+      ],
+      "id": "df187d02-f148-4697-9912-e28358dd9c83",
+      "name": "Update Subscription",
+      "notesInFlow": false,
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.romanh.net/api/v1/accounts/{{ $('WhatsApp Webhook').first().json.body.conversation.messages[0].account_id }}/conversations/{{ $('WhatsApp Webhook').first().json.body.conversation.messages[0].conversation_id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "YOUR_CHATWOOT_API_ACCESS_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"content\": ($json.output || '').replace('[NEW_REQUEST]', '').trim(),\n    \"message_type\": \"outgoing\",\n    \"private\": false\n  }\n}}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1088,
+        224
+      ],
+      "id": "82b98d41-65c3-4f64-ba00-0954705abcae",
+      "name": "WhatsApp Send Message",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "# Message Processing",
+        "height": 576,
+        "width": 1744
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3120,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "38e4c205-a85c-4291-86ce-99503546e66e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5b4d3ea9-a8a3-4a71-8503-39b1ee02425d",
+              "name": "text",
+              "value": "={{ $json.body.conversation.messages[0].content }}",
+              "type": "string"
+            },
+            {
+              "id": "d20c078e-012d-4046-8ea4-4d2a22d02137",
+              "name": "name",
+              "value": "={{ $json.body.conversation.messages[0].sender.name }}",
+              "type": "string"
+            },
+            {
+              "id": "149de53e-f4d0-415e-b28a-e6069dcab8d0",
+              "name": "phone_number",
+              "value": "={{ $json.body.conversation.messages[0].sender.phone_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2416,
+        16
+      ],
+      "id": "bb988932-d28b-40e9-bb05-902f930869d3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.conversation.messages[0].attachments[0].data_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "YOUR_CHATWOOT_API_ACCESS_TOKEN"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -2592,
+        176
+      ],
+      "id": "f5293e99-1d1e-48a6-bc5e-69d8a34d7716",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acb05285-a073-4dc2-947a-3346337853d4",
+              "name": "text",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "5db63f94-1368-48d8-9e29-f8ac635f5a74",
+              "name": "name",
+              "value": "={{ $('WhatsApp Webhook').item.json.body.conversation.messages[0].sender.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f83b9348-4278-4739-a9ec-5ae981fe07a1",
+              "name": "phone_number",
+              "value": "={{ $('WhatsApp Webhook').item.json.body.conversation.messages[0].sender.phone_number }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2256,
+        176
+      ],
+      "id": "60c81d6a-93e6-4e98-add7-557ecf1c8780",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b961f11c-3709-4136-bf4d-4eaa37c2f115",
+              "leftValue": "={{ $json.body.conversation.messages[0].content }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2800,
+        96
+      ],
+      "id": "38ad735f-9e54-4b1e-aa59-6925be8404e6",
+      "name": "Check Message Type"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-flash-lite-latest",
+          "mode": "list",
+          "cachedResultName": "models/gemini-flash-lite-latest"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -2416,
+        176
+      ],
+      "id": "d3f692b4-87a1-4325-b454-4b04f2595ef1",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "z9sqWtfi9Fcll1Xo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "#  Knowledge Base",
+        "height": 640,
+        "width": 736,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -688,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "20ccd22c-eb41-4c7a-9cda-4b2c2e45b734",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# AI Customer Support & DB",
+        "height": 656,
+        "width": 736,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -688,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "db5fb34b-8100-4786-9508-f9d14d6c821e",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# AI Automation by Eng. Elsayed Awad",
+        "width": 704,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3120,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "b0919274-aced-4778-bfb7-1534b2705ca6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Execute a SQL query in PostgresCRITICAL: Use this tool ONLY when a customer requests a sensitive action that requires management approval, such as suspending their subscription.\nYou must pass a single JSON object with exactly two keys:\n1. \"phone\": The customer's phone number as a string.\n2. \"requested_parameters\": A JSON object containing the request details (e.g., {\"duration_days\": 14}).\nDo not promise the customer that the action is completed. Tell them it is pending management approval and provide the returned request ID\nCRITICAL INSTRUCTION: After this tool executes, your final reply to the user MUST end with this exact text: [NEW_REQUEST]",
+        "operation": "executeQuery",
+        "query": "INSERT INTO approval_requests (customer_id, action_type, requested_parameters)\nSELECT id, 'SUSPEND_SUBSCRIPTION', ($1::json->>'requested_parameters')::jsonb\nFROM customers\nWHERE phone LIKE '%' || ($1::json->>'phone')\nRETURNING id, status;",
+        "options": {
+          "queryReplacement": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query_Parameters', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        -560,
+        -240
+      ],
+      "id": "74c6ceca-c06a-4132-8ef2-44cf217a68e5",
+      "name": "Create_Approval_Request",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1440767668",
+        "text": "=ًںڑ¨ ط·ظ„ط¨ ظ…ظˆط§ظپظ‚ط© ط¬ط¯ظٹط¯ ًںڑ¨\n\nًں‘¤ ط§ظ„ط¹ظ…ظٹظ„: {{ $('Edit Fields').isExecuted ? $('Edit Fields').item.json.name : $('Edit Fields1').item.json.name }}\nًں“± ط§ظ„ظ‡ط§طھظپ: {{ $('Edit Fields').isExecuted ? $('Edit Fields').item.json.phone_number : $('Edit Fields1').item.json.phone_number }}\nًں’¬ ط±ط³ط§ظ„طھظ‡: {{ $('Edit Fields').isExecuted ? $('Edit Fields').item.json.text : $('Edit Fields1').item.json.text }}\n\nًں“‹ طھظپط§طµظٹظ„ ط§ظ„ط·ظ„ط¨ ظپظٹ ط§ظ„ظ†ط¸ط§ظ…:\nط±ظ‚ظ… ط§ظ„ط·ظ„ط¨: {{ $json.id }}\nط§ظ„ط¥ط¬ط±ط§ط،: {{ $json.action_type.replace('_', ' ') }}\nط§ظ„طھظپط§طµظٹظ„: {{ $json.requested_parameters.action == 'cancel_and_refund' ? 'ط¥ظ„ط؛ط§ط، ظˆط§ط³طھط±ط¯ط§ط¯' : ($json.requested_parameters.duration_days ? 'طھط¬ظ…ظٹط¯ ظ„ظ…ط¯ط© ' + $json.requested_parameters.duration_days + ' ظٹظˆظ…' : 'ط·ظ„ط¨ طھط¹ط¯ظٹظ„ ط§ط´طھط±ط§ظƒ') }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "âœ… ظ…ظˆط§ظپظ‚ط©",
+                    "additionalFields": {
+                      "callback_data": "=approve_{{ $json.id }}"
+                    }
+                  },
+                  {
+                    "text": "â‌Œ ط±ظپط¶",
+                    "additionalFields": {
+                      "callback_data": "=reject_{{ $json.id }}"
+                    }
+                  },
+                  {
+                    "text": "ًں“‍ ط§ظ„طھظˆط§طµظ„ ظ…ط¹ ط§ظ„ط¹ظ…ظٹظ„",
+                    "additionalFields": {
+                      "callback_data": "=contact_{{ $json.id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2112,
+        640
+      ],
+      "id": "0f9b5dbc-3928-4fcf-94aa-7892bad32b78",
+      "name": "Send a text message",
+      "webhookId": "377fdf6f-461a-406a-8c81-408618fe19e6",
+      "retryOnFail": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "wZ19V2M5mGJuAzQA",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "af6f5db6-4102-4e4f-a393-e2047d256914",
+              "leftValue": "={{ $('AI Customer Agent').item.json.output }}",
+              "rightValue": "[NEW_REQUEST]",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2672,
+        640
+      ],
+      "id": "0ecc2d3c-c328-4023-8b1d-8d4974030b41",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE approval_requests\nSET conversation_id = $2, account_id = $3\nWHERE id = (\n    SELECT id FROM approval_requests\n    WHERE customer_id = (SELECT id FROM customers WHERE phone LIKE '%' || $1 LIMIT 1)\n    ORDER BY id DESC LIMIT 1\n)\nRETURNING *;",
+        "options": {
+          "queryReplacement": "={{ ($('Edit Fields').isExecuted ? $('Edit Fields').item.json.phone_number : $('Edit Fields1').item.json.phone_number).replace('+20', '0') }}, {{ $('WhatsApp Webhook').first().json.body.conversation.messages[0].conversation_id }}, {{ $('WhatsApp Webhook').first().json.body.conversation.messages[0].account_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2336,
+        624
+      ],
+      "id": "ae3e4e4d-afcf-44df-96f9-bc591483595c",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2848,
+        1072
+      ],
+      "id": "d927569a-d55a-409d-b182-4dc7b452cf2f",
+      "name": "Telegram Trigger",
+      "webhookId": "83e97b70-61bb-4d21-be44-c0cbe08cbaf4",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZ19V2M5mGJuAzQA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $json.callback_query.id }}",
+        "additionalFields": {
+          "text": "\"طھظ… ط§ط³طھظ„ط§ظ… ظ‚ط±ط§ط±ظƒ ط¨ظ†ط¬ط§ط­"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2640,
+        1072
+      ],
+      "id": "64f165eb-7fcf-4efd-bb5c-f3a7003b231a",
+      "name": "Answer Query a callback",
+      "webhookId": "c0976496-3ed5-4f5a-9a9f-afd09df4461f",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZ19V2M5mGJuAzQA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger').item.json.callback_query.data }}",
+                    "rightValue": "=approve",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "39acff61-5111-4362-9c80-998a9a900c92"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "approve"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ceaec523-fa25-48ac-b957-566fe2767c35",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.callback_query.data }}",
+                    "rightValue": "=reject",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "reject"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3db34368-a4e6-4504-adf1-1d86a3e0ed45",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.callback_query.data }}",
+                    "rightValue": "contact",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "contact"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -2272,
+        1056
+      ],
+      "id": "88588ec8-8376-4fd0-bd7b-c9c02b516078",
+      "name": "Switch1",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.message.chat.id }}",
+        "messageId": "={{ $('Telegram Trigger').item.json.callback_query.message.message_id }}",
+        "text": "= {{ $('Telegram Trigger').item.json.callback_query.message.text }} âœ… (طھظ… ط§طھط®ط§ط° ط§ظ„ظ‚ط±ط§ط±)",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2432,
+        1072
+      ],
+      "id": "eb0725ed-4fcb-4076-aff3-7308b4486b5f",
+      "name": "Edit a text message",
+      "webhookId": "542136f7-d09e-43c9-adcf-ef5bfdc74266",
+      "credentials": {
+        "telegramApi": {
+          "id": "wZ19V2M5mGJuAzQA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Human in The loop",
+        "height": 1072,
+        "width": 2320,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3296,
+        528
+      ],
+      "typeVersion": 1,
+      "id": "50cb3e0e-a912-42dc-b43f-4caf33313e7e",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -2064,
+        272
+      ],
+      "id": "26d35d13-e671-4597-b6c9-57ab80aea738",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "CIVfiX2ChZntDy36",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH updated_request AS (\n    -- ط§ظ„ط®ط·ظˆط© ط§ظ„ط£ظˆظ„ظ‰: ظ†ط؛ظٹط± ط­ط§ظ„ط© ط§ظ„ط·ظ„ط¨ ظ„ظ€ APPROVED ظˆظ†ط³ط­ط¨ ط§ظ„ظ€ customer_id ظˆط§ظ„طھظپط§طµظٹظ„\n    UPDATE approval_requests \n    SET status = 'APPROVED', resolved_at = CURRENT_TIMESTAMP \n    WHERE id = $1 \n    RETURNING customer_id, requested_parameters, action_type\n)\n-- ط§ظ„ط®ط·ظˆط© ط§ظ„ط«ط§ظ†ظٹط©: ظ†ط¹ظ…ظ„ JOIN ظ…ط¹ ط¬ط¯ظˆظ„ subscriptions ط¹ظ† ط·ط±ظٹظ‚ ط§ظ„ظ€ customer_id ظˆظ†ظ…ط¯ ط§ظ„طھط§ط±ظٹط®\nUPDATE subscriptions\nSET end_date = end_date + (CAST(updated_request.requested_parameters->>'duration_days' AS INTEGER) * INTERVAL '1 day')\nFROM updated_request\nWHERE subscriptions.customer_id = updated_request.customer_id\n  AND updated_request.action_type = 'SUSPEND_SUBSCRIPTION';",
+        "options": {
+          "queryReplacement": "={{ $('Telegram Trigger').item.json.callback_query.data.replace('approve_', '') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1920,
+        864
+      ],
+      "id": "86ce2a1d-a09a-4633-b723-5320c01fed93",
+      "name": "DB: Approve",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE approval_requests SET status = 'REJECTED', resolved_at = CURRENT_TIMESTAMP WHERE id = $1;",
+        "options": {
+          "queryReplacement": "={{ $('Telegram Trigger').item.json.callback_query.data.replace('reject_', '') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1920,
+        1072
+      ],
+      "id": "2bc79406-7b16-498d-a996-2f54cecdc735",
+      "name": "DB Reject",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE approval_requests SET status = 'UNDER_REVIEW', resolved_at = CURRENT_TIMESTAMP WHERE id = $1;",
+        "options": {
+          "queryReplacement": "={{ $('Telegram Trigger').item.json.callback_query.data.replace('contact_', '') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1920,
+        1312
+      ],
+      "id": "fb9be650-5ae6-4be5-81eb-900597213c4d",
+      "name": "DB Under Review",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT customers.phone, approval_requests.status, approval_requests.conversation_id, approval_requests.account_id\nFROM customers\nJOIN approval_requests ON customers.id = approval_requests.customer_id\nWHERE approval_requests.id = $1;",
+        "options": {
+          "queryReplacement": "={{ $('Telegram Trigger').item.json.callback_query.data.match(/\\d+/)[0] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1488,
+        1072
+      ],
+      "id": "3497e618-06d7-4573-aeda-b64d14dc3535",
+      "name": "DB Get Customer Chat IDs",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.romanh.net/api/v1/accounts/{{ $json.account_id }}/conversations/{{ $json.conversation_id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "YOUR_CHATWOOT_API_ACCESS_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"{{ $json.status == 'APPROVED' ? 'ظ…ط±ط­ط¨ط§ظ‹طŒ طھظ… ظ…ط±ط§ط¬ط¹ط© ط·ظ„ط¨ظƒ ظ…ظ† ظ‚ط¨ظ„ ط§ظ„ط¥ط¯ط§ط±ط© ظˆط§ظ„ظ…ظˆط§ظپظ‚ط© ط¹ظ„ظٹظ‡ ط¨ظ†ط¬ط§ط­ âœ…' : ($json.status == 'REJECTED' ? 'ظ…ط±ط­ط¨ط§ظ‹طŒ ظ†ط¹طھط°ط± ظ…ظ†ظƒطŒ ظ„ظ… طھطھظ… ط§ظ„ظ…ظˆط§ظپظ‚ط© ط¹ظ„ظ‰ ط·ظ„ط¨ظƒ ط¨ط¹ط¯ ط§ظ„ظ…ط±ط§ط¬ط¹ط© â‌Œ' : 'ظ…ط±ط­ط¨ط§ظ‹طŒ ط·ظ„ط¨ظƒ ظٹط­طھط§ط¬ ظ„ظ…ط²ظٹط¯ ظ…ظ† ط§ظ„طھظپط§طµظٹظ„طŒ ظˆط³ظٹظ‚ظˆظ… ط£ط­ط¯ ظ…ظ…ط«ظ„ظٹ ط§ظ„ط¥ط¯ط§ط±ط© ط¨ط§ظ„طھظˆط§طµظ„ ظ…ط¹ظƒ ظپظٹ ط£ظ‚ط±ط¨ ظˆظ‚طھ ًں“‍') }}\",\n  \"message_type\": \"outgoing\",\n  \"private\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1168,
+        1072
+      ],
+      "id": "488ef07b-e6cb-4016-9add-480d87e81b03",
+      "name": "Send a text message1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "AI Customer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Sales Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Customer Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Sales Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Sales Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Customer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Gym Knowledge Base",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smart LLM Router": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Sales Agent": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Customer Agent": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gym Knowledge Base": {
+      "ai_vectorStore": [
+        []
+      ],
+      "ai_tool": [
+        [
+          {
+            "node": "AI Sales Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subscription DB Query": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Customer Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Subscription": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Customer Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Send Message": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Smart LLM Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Message Type": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Smart LLM Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create_Approval_Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Customer Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Answer Query a callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer Query a callback": {
+      "main": [
+        [
+          {
+            "node": "Edit a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit a text message": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "DB: Approve",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DB Reject",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DB Under Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Smart LLM Router",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Approve": {
+      "main": [
+        [
+          {
+            "node": "DB Get Customer Chat IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB Reject": {
+      "main": [
+        [
+          {
+            "node": "DB Get Customer Chat IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB Under Review": {
+      "main": [
+        [
+          {
+            "node": "DB Get Customer Chat IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB Get Customer Chat IDs": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "524852a1-831b-4bf0-8568-d3923ae823b6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e84c862d1dbc5de9be7920af94583a2f7160a3543f53d0bde2585b78275e273b"
+  },
+  "nodeGroups": [],
+  "id": "OPzrpjMYlQe7xq9B",
+  "tags": []
+}

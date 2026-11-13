@@ -1,0 +1,1136 @@
+﻿{
+  "name": "Gym AI Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "customers",
+          "mode": "list",
+          "cachedResultName": "customers"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{ $json['Start Date'] }}",
+            "age": "={{ $json.Age }}",
+            "phone": "={{ $json['Phone Number '] }}",
+            "name": "={{ $json['Full Name'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "age",
+              "displayName": "age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -864,
+        -160
+      ],
+      "id": "032f17d0-c390-420d-ac13-893176c8685f",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "subscriptions",
+          "mode": "list",
+          "cachedResultName": "subscriptions"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "customer_id": "={{ $json.id }}",
+            "start_date": "={{ $('Admin Dashboard Trigger').item.json['Start Date'] }}",
+            "duration_months": "={{ $('Admin Dashboard Trigger').item.json['Subscription Plan'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "customer_id",
+              "displayName": "customer_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "duration_months",
+              "displayName": "duration_months",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "start_date",
+              "displayName": "start_date",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "end_date",
+              "displayName": "end_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -656,
+        -160
+      ],
+      "id": "301aaaa6-6a02-488b-bf8c-64f50e5f58b1",
+      "name": "Insert rows in a table1",
+      "credentials": {
+        "postgres": {
+          "id": "N7FZ70HUMYaZ3QxO",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "34ceb8e9-581a-498e-be43-d17d388a67c6",
+              "name": "name",
+              "value": "={{ $('Insert rows in a table').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "83597138-692d-452f-8f88-db26b2053556",
+              "name": "phone",
+              "value": "={{ '+2' + $('Insert rows in a table').item.json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "56f46aa3-c025-471d-bce8-98b9a094b2fd",
+              "name": "customer_id",
+              "value": "={{ $json.customer_id }}",
+              "type": "number"
+            },
+            {
+              "id": "72941be1-a0ea-4b57-9d9a-36f1b1a951c7",
+              "name": "duration_months",
+              "value": "={{ $json.duration_months }}",
+              "type": "number"
+            },
+            {
+              "id": "4833decf-212d-44e2-8138-fb8bad9207ef",
+              "name": "start_date",
+              "value": "={{ $json.start_date }}",
+              "type": "string"
+            },
+            {
+              "id": "194168b1-938a-448f-82b1-aa397b4f6d57",
+              "name": "end_date",
+              "value": "={{ $json.end_date }}",
+              "type": "string"
+            },
+            {
+              "id": "ab8d1eb5-92c5-44c4-8fb3-0a2859c93989",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        -160
+      ],
+      "id": "16e64969-52db-4d6c-a9e3-437469cb3bc4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1216,
+        352
+      ],
+      "id": "c0614fd9-83ac-459f-997b-e7998eaee0c2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1adw-S-xtpzpRCby8BEsDWQTAXM4ce58BYQs3wekml7Y",
+          "mode": "list",
+          "cachedResultName": "elsayedsels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1adw-S-xtpzpRCby8BEsDWQTAXM4ce58BYQs3wekml7Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ط§ظ„ظˆط±ظ‚ط©1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1adw-S-xtpzpRCby8BEsDWQTAXM4ce58BYQs3wekml7Y/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -976,
+        416
+      ],
+      "id": "c841ec74-8339-469c-8f8b-7458c7cd05c4",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pS9f44jWRt5tvruK",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -816,
+        336
+      ],
+      "id": "3b27de6f-f5db-4771-a11b-119d367a7332",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. ط¬ظ„ط¨ ظƒظ„ ط§ظ„ظ…ظ„ظپط§طھ ط§ظ„ظ„ظٹ ط±ط§ط¬ط¹ط© ظ…ظ† ط¬ظˆط¬ظ„ ط¯ط±ط§ظٹظپ\nconst driveFiles = $('Search files and folders').all();\n\n// 2. ط¬ظ„ط¨ ظƒظ„ ط§ظ„ط¨ظٹط§ظ†ط§طھ (ط§ظ„طµظپظˆظپ) ط§ظ„ظ„ظٹ ظ…طھط³ط¬ظ„ط© ظپظٹ ط¬ظˆط¬ظ„ ط´ظٹطھ\nconst sheetRows = $('Get row(s) in sheet').all();\n\n// 3. ط§ط³طھط®ط±ط§ط¬ ظ…طµظپظˆظپط© (Array) ظپظٹظ‡ط§ ظƒظ„ ط§ظ„ظ€ IDs ط§ظ„ظ„ظٹ ط§طھط³ط¬ظ„طھ ظ‚ط¨ظ„ ظƒط¯ظ‡ ظپظٹ ط§ظ„ط´ظٹطھ\n// âڑ ï¸ڈ طھظ†ط¨ظٹظ‡: ظ‚ظ… ط¨طھط؛ظٹظٹط± ظƒظ„ظ…ط© 'file_id' ظ„طھط·ط§ط¨ظ‚ ط§ط³ظ… ط§ظ„ط¹ظ…ظˆط¯ ط§ظ„ظ…ظˆط¬ظˆط¯ ط¹ظ†ط¯ظƒ ظپظٹ ط§ظ„ط´ظٹطھ\nconst existingIds = sheetRows.map(row => row.json.ID);\n\n// 4. ظپظ„طھط±ط© ظ…ظ„ظپط§طھ ط§ظ„ط¯ط±ط§ظٹظپ: ظ‡ظ†ط®ظ„ظٹ ط¨ط³ ط§ظ„ظ…ظ„ظپط§طھ ط§ظ„ظ„ظٹ ط§ظ„ظ€ ID ط¨طھط§ط¹ظ‡ط§ ظ…ط´ ظ…ظˆط¬ظˆط¯ ظپظٹ ط§ظ„ط´ظٹطھ\nconst newFiles = driveFiles.filter(file => !existingIds.includes(file.json.id));\n\n// 5. ط¥ط±ط¬ط§ط¹ ط§ظ„ظ…ظ„ظپط§طھ ط§ظ„ط¬ط¯ظٹط¯ط© ظپظ‚ط· ظ„طھظƒظ…ظ„ط© ظ…ط³ط§ط± ط§ظ„ط¹ظ…ظ„\nreturn newFiles;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        336
+      ],
+      "id": "0b6ccc37-2070-449e-9534-98ded10ca4a5",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1adw-S-xtpzpRCby8BEsDWQTAXM4ce58BYQs3wekml7Y",
+          "mode": "list",
+          "cachedResultName": "elsayedsels",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1adw-S-xtpzpRCby8BEsDWQTAXM4ce58BYQs3wekml7Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ط§ظ„ظˆط±ظ‚ط©1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1adw-S-xtpzpRCby8BEsDWQTAXM4ce58BYQs3wekml7Y/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.id }}",
+            "name ": "={{ $json.name }}"
+          },
+          "matchingColumns": [
+            "name "
+          ],
+          "schema": [
+            {
+              "id": "name ",
+              "displayName": "name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -336,
+        336
+      ],
+      "id": "51014d68-94e3-49cc-af02-436a6712376e",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pS9f44jWRt5tvruK",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ca9c33d-6415-4574-925d-fcd9b66db6bd",
+              "name": "name ",
+              "value": "={{ $json['name '] }}",
+              "type": "string"
+            },
+            {
+              "id": "f17209fa-682e-4388-99d0-2ac72238365b",
+              "name": "ID",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        336
+      ],
+      "id": "6f696098-a01b-46dd-9cfa-326eb6b6257e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        320,
+        336
+      ],
+      "id": "741f0527-8566-4967-9ce6-bb73ab33ee4c",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        688,
+        640
+      ],
+      "id": "1ec0d5ba-3e8d-4d19-b333-03e21ba7c342",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 150,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        560,
+        736
+      ],
+      "id": "df4aca8e-3449-45e9-b75c-96057f26519e",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "embeddingBatchSize": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        352
+      ],
+      "id": "981e9f4c-225b-4020-88f4-df1fb3226142",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "qUqUD5SuLWvwe6ED",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.ID }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        64,
+        336
+      ],
+      "id": "0cadbf99-49ba-45c1-98ad-4626e5babbe0",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "EQl80PXxfFixzFe0",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "=",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1Um8K_hjAZtSvgWxlzNSRmtSrQBtthjq-",
+            "mode": "list",
+            "cachedResultName": "Gym",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1Um8K_hjAZtSvgWxlzNSRmtSrQBtthjq-"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -976,
+        240
+      ],
+      "id": "e3b0f97f-f1f4-4a94-ae3c-91b874c05a1d",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "EQl80PXxfFixzFe0",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "702d271c-6cfb-4351-9a55-43d68f50f6df",
+              "leftValue": "={{ $json.payload.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        -160
+      ],
+      "id": "92c1db72-7ddb-4641-9d80-7837eb523526",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1f617a86-4d58-4e6f-ac71-42507c15c836",
+              "name": "contact_id",
+              "value": "= {{ $json.payload[0].id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -256
+      ],
+      "id": "64cc39b6-3626-4b8d-8f67-7e1613f44195",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1f617a86-4d58-4e6f-ac71-42507c15c836",
+              "name": "contact_id",
+              "value": "={{ $json.payload.contact.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        -80
+      ],
+      "id": "94fa3d8f-fec4-48cd-9984-7806c55280b9",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.romanh.net/api/v1/accounts/164/conversations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "YOUR_CHATWOOT_API_ACCESS_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contact_id\": \"{{ $json.contact_id }}\",\n  \"inbox_id\": \"185\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "ec3c33f3-f50c-4f0f-b80e-c5eea2917e5b",
+      "name": "Create Conversation"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.romanh.net/api/v1/accounts/164/conversations/{{ $json.id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "YOUR_CHATWOOT_API_ACCESS_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"ط£ظ‡ظ„ط§ظ‹ ط¨ظٹظƒ ظٹط§ {{1}} ظپظٹ ط¹ط§ط¦ظ„ط© طھظٹطھط§ظ†ط² ط¬ظٹظ…! ًںڈ† ظ†ظˆط±طھ ظ…ظƒط§ظ†ظƒطŒ ظˆط¥ط­ظ†ط§ ط³ط¹ط¯ط§ط، ط¬ط¯ط§ظ‹ ط¨ط§ظ†ط¶ظ…ط§ظ…ظƒ ظ„ظٹظ†ط§ ظˆط¨ط¯ط§ظٹط© ط±ط­ظ„طھظƒ ط§ظ„ط±ظٹط§ط¶ظٹط© ظ…ط¹ط§ظ†ط§. ظ„ظˆ ظ…ط­طھط§ط¬ ط£ظٹ ط§ط³طھظپط³ط§ط± ط¨ط®طµظˆطµ ط§ظ„ظ…ظˆط§ط¹ظٹط¯ ط£ظˆ ط§ظ„ط£ظ†ط¸ظ…ط©طŒ ط£ظ†ط§ ظ…ظˆط¬ظˆط¯ ظ‡ظ†ط§ ط¹ط´ط§ظ†ظƒ ط¯ط§ظٹظ…ط§ظ‹. ًں’ھًں”¥ ط¬ط§ظ‡ط² ظ„ظ„طھط­ط¯ظٹطں\",\n  \"content_type\": \"text\",\n  \"message_type\": \"outgoing\",\n  \"template_params\": {\n    \"name\": \"titans_gym_welcome\",\n    \"namespace\": \"ظ‡ظ†ط­ط·ظ‡ ط¨ط¹ط¯ ظ…ط§ طھط¬ظٹط¨ظ‡\",\n    \"category\": \"MARKETING\",\n    \"language\": \"ar\",\n    \"processed_params\": {\n      \"body\": {\n      \"1\": \"{{ $json.sender.name }}\"\n      }\n    }\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        784,
+        -160
+      ],
+      "id": "2dcfdef8-1503-4347-b07a-562a68afe459",
+      "name": "Send Message"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://app.romanh.net/api/v1/accounts/164/contacts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "YOUR_CHATWOOT_API_ACCESS_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"{{ $json.name }}\",\n  \"phone_number\": \"{{ $json.phone }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        144,
+        -80
+      ],
+      "id": "d0453597-9714-4fbe-be1e-f769d03c9bbf",
+      "name": "Create Contact"
+    },
+    {
+      "parameters": {
+        "formTitle": "Gym Membership Registration",
+        "formDescription": "Register a new customer. The system will automatically calculate the subscription end date and send a WhatsApp welcome message.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone Number ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Age",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Subscription Plan",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "1 "
+                  },
+                  {
+                    "option": "2 "
+                  },
+                  {
+                    "option": "3"
+                  },
+                  {
+                    "option": "6 "
+                  },
+                  {
+                    "option": "12"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Start Date",
+              "fieldType": "date",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -1072,
+        -160
+      ],
+      "id": "d684cf2c-7de2-4c0f-9a3e-fb27f7174894",
+      "name": "Admin Dashboard Trigger",
+      "webhookId": "1aece7a7-d4e8-418d-8225-6068820ed83e"
+    },
+    {
+      "parameters": {
+        "content": "# RAG",
+        "height": 784,
+        "width": 2656
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1408,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "c001ff76-43fe-41bd-a504-9f56fab21b78",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        624
+      ],
+      "id": "1080f2d4-c67c-4faa-8a8f-4052b06447eb",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "yqL7jTv8Sld4sfR7",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Client Registration Dashboard",
+        "height": 352,
+        "width": 2640,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1408,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "0258a181-2fa5-4fcc-b46e-cbc0d0caab26",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# AI Automation by Eng. Elsayed Awad",
+        "width": 704
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1408,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "7c73fe7a-37fa-41f8-ad48-f956d2f9c5ff",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Create Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Create Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Conversation": {
+      "main": [
+        [
+          {
+            "node": "Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Contact": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Admin Dashboard Trigger": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9a4b48db-704a-4a48-88da-d35703370a94",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e84c862d1dbc5de9be7920af94583a2f7160a3543f53d0bde2585b78275e273b"
+  },
+  "nodeGroups": [],
+  "id": "3SVpB9bdx1dnulyN",
+  "tags": [
+    {
+      "updatedAt": "2026-10-07T02:14:33.254Z",
+      "createdAt": "2026-10-07T02:14:33.254Z",
+      "id": "SRPVeWsHMDbDyqvY",
+      "name": "Admin"
+    }
+  ]
+}

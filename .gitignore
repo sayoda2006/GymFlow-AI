@@ -1,0 +1,74 @@
+# ============================================================
+# GymFlow AI — .gitignore
+# ============================================================
+
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.*.local
+*.env
+secrets/
+credentials/
+*_credentials.json
+service-account*.json
+
+# --- API Keys & Tokens ---
+*api_key*
+*api_token*
+*access_token*
+*secret_key*
+*.pem
+*.p12
+*.pfx
+
+# --- Databases ---
+*.db
+*.sqlite
+*.sqlite3
+*.sql.bak
+dump.sql
+database_backup*
+
+# --- n8n Local Files ---
+.n8n/
+n8n-data/
+n8n_backup*/
+
+# --- Backups ---
+*.bak
+*.backup
+*_backup*
+backup/
+backups/
+
+# --- OS & Editor ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Logs ---
+*.log
+logs/
+npm-debug.log*
+
+# --- Node.js (if any tooling used) ---
+node_modules/
+package-lock.json
+
+# --- Python (if any scripts used) ---
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# --- Temporary Files ---
+*.tmp
+*.temp
+.tmp/
+temp/
